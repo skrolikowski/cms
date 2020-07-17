@@ -1,5 +1,5 @@
 <template>
-    <p-modal name="edit-field" title="Edit Field" noCloseButton noEscClose extra-large v-model="modalOpen">
+    <p-modal name="edit-field" title="Edit Field" noCloseButton noEscClose extra-large v-model="isOpen">
         <div class="row mb-6">
             <div class="col w-1/2">
                 <p-input
@@ -47,15 +47,15 @@
 
         <component v-if="form.type" :is="form.type.id + '-fieldtype-settings'" v-model="form"></component>
 
-        <template slot="footer">
-            <p-button class="ml-2" @click="cancel">Cancel</p-button>
-            <p-button theme="primary" class="ml-2" @click.prevent="submit">Save</p-button>
+        <template v-slot:footer>
+            <p-button @click="close">Close</p-button>
+            <p-button theme="primary" @click="submit" class="mr-1">Save</p-button>
         </template>
    </p-modal>
 </template>
 
 <script>
-    import Form from '../services/Form'
+    import Form from '../../services/Form'
 
     export default {
         name: 'field-editor',
@@ -63,33 +63,34 @@
         data() {
             return {
                 form: new Form({}),
-                modalOpen: false,
+                isOpen: false
             }
         },
 
         props: {
             value: {
-                type: Object,
+                type: [Boolean,Object],
                 required: true
             }
         },
 
         watch: {
             value(value) {
-                this.form = new Form(_.cloneDeep(value))
+                this.isOpen = !! value
+                this.form   = new Form(_.cloneDeep(value))
             }
         },
 
         methods: {
             submit() {
                 this.form.post('/api/fields/validate')
-                    .then((response) => {
-                        this.$emit('save', this.value.handle, this.form.data())
-                    }).catch((error) => { })
+                    .then((response) => this.$emit('save', this.value.handle, this.form.data()))
+                    .catch((error)   => console.log(error))
             },
 
-            cancel() {
-                this.$emit('cancel', this.value.handle)
+            close() {
+                this.isOpen = false
+                this.$emit('close')
             }
         }
     }
