@@ -23,21 +23,21 @@ class ReplicatorFieldtype extends Fieldtype
      * @var array
      */
     public $settings = [
-        'taxonomy' => null
+        'replicator' => null
     ];
 
     /**
      * @var array
      */
     public $rules = [
-        'settings.taxonomy' => 'required'
+        'settings.replicator' => 'required'
     ];
 
     /**
      * @var array
      */
     public $attributes = [
-        'settings.taxonomy' => 'taxonomy'
+        'settings.replicator' => 'replicator'
     ];
 
     /**
